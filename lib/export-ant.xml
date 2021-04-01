@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="export-ant" default="clean-up">
+
+	<target name="check-params">
+		
+		<!-- CHECK PARAMS: APPCONFIG -->
+		<condition property="PARAM_APPCONFIG_SET" value="true">
+			<isset property="APPCONFIG"/>
+		</condition>
+		<fail message="APPCONFIG parameter is missing (AppConfig XML file full path)" unless="PARAM_APPCONFIG_SET"/>
+		
+		<available property="PARAM_APPCONFIG_EXISTS" value="true" file="${APPCONFIG}" type="file"/>
+		<fail message="APPCONFIG cannot be found or is not an existing file: ${APPCONFIG}" unless="PARAM_APPCONFIG_EXISTS"/>
+		
+		<!-- CHECK PARAMS: TEMPLATE -->
+		<condition property="PARAM_TEMPLATE_SET" value="true">
+			<isset property="TEMPLATE"/>
+		</condition>
+		<fail message="TEMPLATE parameter is missing (TEMPLATE XML file full path)" unless="PARAM_TEMPLATE_SET"/>
+		
+		<available property="PARAM_TEMPLATE_EXISTS" value="true" file="${TEMPLATE}" type="file"/>
+		<fail message="TEMPLATE cannot be found or is not an existing file: ${TEMPLATE}" unless="PARAM_TEMPLATE_EXISTS"/>
+
+		<!-- CHECK PARAMS: ODS -->
+		<condition property="PARAM_ODS_SET" value="true">
+			<isset property="ODS"/>
+		</condition>
+		<fail message="ODS parameter is missing (Output ODS file full path)" unless="PARAM_ODS_SET"/>
+		
+		<!-- CHECK PARAMS: MODULE_CONFIG -->
+		<available file="${MODULE_CONFIG}" type="file" property="PARAM_MODULE_CONFIG_EXISTS"/>
+		<fail message="MODULE_CONFIG cannot be found or is not an existing file: ${MODULE_CONFIG}" unless="PARAM_MODULE_CONFIG_EXISTS"/>
+	</target>
+
+	<target name="init" depends="check-params">
+	</target>
+	
+	<target name="main" depends="init">
+	
+		<echo message="Input: Profile File: ${APPCONFIG}"/>
+		<echo message="Input: ODS Template File: ${TEMPLATE}"/>
+		<echo message="Output: ODS File: ${ODS}"/>
+
+		<tempfile property="TEMP"/>
+		<basename property="TEMPLATE_OUT" file="${TEMP}"/>
+		<unzip src="${TEMPLATE}" dest="${java.io.tmpdir}/${TEMPLATE_OUT}" overwrite="true"/>
+		
+		<tempfile property="TEMP2"/>
+		<basename property="CONTENT_OUT" file="${TEMP2}"/>
+		
+		<basename property="PROFILE_NAME_NOEXT" file="${APPCONFIG}" suffix=".substvar"/>
+		
+		<condition property="PARAM_APPCONFIG_FOLDER" value="${APPCONFIG_FOLDER}" else="">
+			<isset property="APPCONFIG_FOLDER"/>
+		</condition>
+		<xslt in="${java.io.tmpdir}/${TEMPLATE_OUT}/content.xml" out="${java.io.tmpdir}/${CONTENT_OUT}" style="export.xsl">
+			<param name="PROFILE" expression="${APPCONFIG}"/>
+			
+			<param name="ENV" expression="${PROFILE_NAME_NOEXT}"/>
+			<param name="SHEET_NAME" expression="Configuration"/>
+			<param name="MODULE_CONFIG" expression="${MODULE_CONFIG}"/>
+			<param name="DATE" expression="${DATE}"/>
+			<param name="USERNAME" expression="${user.name}"/>
+			
+			<param name="VALUE_ID" expression="ID"/>
+			<param name="VALUE_ENVIRONMENT" expression="Environment"/>
+			<param name="VALUE_DESCRIPTION" expression="Description"/>
+		</xslt>
+		
+		<move file="${java.io.tmpdir}/${CONTENT_OUT}" tofile="${java.io.tmpdir}/${TEMPLATE_OUT}/content.xml" overwrite="true"/>
+		<zip destfile="${ODS}" basedir="${java.io.tmpdir}/${TEMPLATE_OUT}"/>
+	</target>
+	
+	<target name="clean-up" depends="main">
+	</target>
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="create-ODS-from-AppConfig-ant" default="clean-up">
+
+	<target name="check-params">
+		
+		<!-- CHECK PARAMS: APPCONFIG -->
+		<condition property="PARAM_APPCONFIG_OK" value="true">
+			<isset property="APPCONFIG"/>
+		</condition>
+		<fail message="APPCONFIG parameter is missing (AppConfig XML file full path)" unless="PARAM_APPCONFIG_OK"/>
+		
+		<available property="PARAM_APPCONFIG_EXISTS" value="true" file="${APPCONFIG}" type="file"/>
+		<fail message="APPCONFIG cannot be found or is not an existing file: ${APPCONFIG}" unless="PARAM_APPCONFIG_EXISTS"/>
+		
+	</target>
+
+	<target name="init" depends="check-params">
+
+		<echo message="AppConfig File: ${APPCONFIG}"/>
+	</target>
+	
+	<target name="main" depends="init">
+	
+		<echo message=""/>
+		<echo message="=== Creating ODS File from AppConfig File ..."/>
+		<echo message=""/>
+		
+		<xslt in="${APPCONFIG}" out="../templates/ods/content.xml" style="create-ODS-from-AppConfig.xsl"/>
+		<zip destfile="test.ods" basedir="../templates/ods"/>
+	</target>
+	
+	<target name="clean-up" depends="main">
+	</target>
+</project>

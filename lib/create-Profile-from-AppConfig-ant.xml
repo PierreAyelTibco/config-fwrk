@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="RectifyProfiles" default="clean-up">
+
+	<target name="check-params">
+		
+		<!-- CHECK PARAMS: APPFOLDER -->
+		<condition property="PARAM_APPFOLDER_OK" value="true">
+			<isset property="APPFOLDER"/>
+		</condition>
+		<fail message="APPFOLDER parameter is missing (.application folder full path)" unless="PARAM_APPFOLDER_OK"/>
+		
+		<available property="PARAM_APPFOLDER_EXISTS" value="true" file="${APPFOLDER}" type="dir"/>
+		<fail message="APPFOLDER cannot be found or is not an existing folder/directory: ${APPFOLDER}" unless="PARAM_APPFOLDER_EXISTS"/>
+		
+	</target>
+
+	<target name="init" depends="check-params">
+		<property name="DEVOUT" value="${APPFOLDER}/META-INF/DEV.substvar"/>
+		<available property="DEVOUT_EXISTS" value="true" file="${DEVOUT}" type="file"/>
+		
+		<property name="SITOUT" value="${APPFOLDER}/META-INF/SIT.substvar"/>
+		<available property="SITOUT_EXISTS" value="true" file="${SITOUT}" type="file"/>
+		
+		<property name="SIT2OUT" value="${APPFOLDER}/META-INF/SIT2.substvar"/>
+		<available property="SIT2OUT_EXISTS" value="true" file="${SIT2OUT}" type="file"/>
+		
+		<property name="PREPRODOUT" value="${APPFOLDER}/META-INF/PREPROD.substvar"/>
+		<available property="PREPRODOUT_EXISTS" value="true" file="${PREPRODOUT}" type="file"/>
+		
+		<property name="PRODOUT" value="${APPFOLDER}/META-INF/PROD.substvar"/>
+		<available property="PRODOUT_EXISTS" value="true" file="${PRODOUT}" type="file"/>
+
+		<echo message="AppFolder: ${APPFOLDER}"/>
+		
+		<!-- calculate Application Name -->
+		<basename file="${APPFOLDER}" property="APP_NAME"/>		
+		
+		<!-- calculate Application Version <major>.<middle> -->
+		<loadproperties srcFile="${APPFOLDER}/META-INF/MANIFEST.MF"/>
+		<basename file="${Bundle-Version}" property="APP_VERSION" suffix=".0.qualifier"/>
+	</target>
+	
+	<target name="DEV" depends="init" if="DEVOUT_EXISTS">
+	
+		<echo message=""/>
+		<echo message="=== Rectifying DEV Profile File ..."/>
+		<echo message=""/>
+		
+		<loadfile srcFile="DEV.cfg" property="PROPS-DEV"/>
+		<delete file="DEV.xsl"/>
+		<xslt in="cfg2xsl.xsl" out="DEV.xsl" style="cfg2xsl.xsl">
+			<param name="PROPERTIES" expression="${PROPS-DEV}"/>
+		</xslt>
+		<replace preserveLastModified="yes" file="DEV.xsl" token="&lt;xsl:transform" value="&lt;xsl:transform xmlns:repo=&quot;http://www.tibco.com/xmlns/repo/types/2002&quot;"/>
+
+		<xslt in="${APPFOLDER}/META-INF/DEV.substvar" out="${DEVOUT}.tmp" style="DEV.xsl"/>
+		<copy file="${DEVOUT}.tmp" tofile="${DEVOUT}"/>
+		<!-- replace <value/> by <value></value> as written by Studio to minimize diffs -->
+		<replace preserveLastModified="yes" file="${DEVOUT}" token="&lt;value/&gt;" value="&lt;value&gt;&lt;/value&gt;"/>
+		<delete file="DEV.xsl"/>
+	</target>
+	
+	<target name="SIT" depends="init" if="SITOUT_EXISTS">
+	
+		<echo message=""/>
+		<echo message="=== Rectifying SIT Profile File ..."/>
+		<echo message=""/>
+
+		<loadfile srcFile="SIT.cfg" property="PROPS-SIT"/>
+		<delete file="SIT.xsl"/>
+		<xslt in="cfg2xsl.xsl" out="SIT.xsl" style="cfg2xsl.xsl">
+			<param name="PROPERTIES" expression="${PROPS-SIT}"/>
+		</xslt>	
+		<replace preserveLastModified="yes" file="SIT.xsl" token="&lt;xsl:transform" value="&lt;xsl:transform xmlns:repo=&quot;http://www.tibco.com/xmlns/repo/types/2002&quot;"/>
+		
+		<xslt in="${APPFOLDER}/META-INF/SIT.substvar" out="${SITOUT}.tmp" style="SIT.xsl"/>
+		<copy file="${SITOUT}.tmp" tofile="${SITOUT}"/>
+		<!-- replace <value/> by <value></value> as written by Studio to minimize diffs -->
+		<replace preserveLastModified="yes" file="${SITOUT}" token="&lt;value/&gt;" value="&lt;value&gt;&lt;/value&gt;"/>
+		<delete file="SIT.xsl"/>
+	</target>
+
+	<target name="SIT2" depends="init" if="SIT2OUT_EXISTS">
+	
+		<echo message=""/>
+		<echo message="=== Rectifying SIT2 Profile File ..."/>
+		<echo message=""/>
+
+		<loadfile srcFile="SIT2.cfg" property="PROPS-SIT2"/>
+		<delete file="SIT2.xsl"/>
+		<xslt in="cfg2xsl.xsl" out="SIT2.xsl" style="cfg2xsl.xsl">
+			<param name="PROPERTIES" expression="${PROPS-SIT2}"/>
+		</xslt>	
+		<replace preserveLastModified="yes" file="SIT2.xsl" token="&lt;xsl:transform" value="&lt;xsl:transform xmlns:repo=&quot;http://www.tibco.com/xmlns/repo/types/2002&quot;"/>
+		
+		<xslt in="${APPFOLDER}/META-INF/SIT.substvar" out="${SITOUT}.tmp" style="SIT2.xsl"/>
+		<copy file="${SIT2OUT}.tmp" tofile="${SIT2OUT}"/>
+		<!-- replace <value/> by <value></value> as written by Studio to minimize diffs -->
+		<replace preserveLastModified="yes" file="${SIT2OUT}" token="&lt;value/&gt;" value="&lt;value&gt;&lt;/value&gt;"/>
+		<delete file="SIT2.xsl"/>
+	</target>
+	
+	<target name="PREPROD" depends="init" if="PREPRODOUT_EXISTS">
+		
+		<echo message=""/>
+		<echo message="=== Rectifying PREPROD Profile File ..."/>
+		<echo message=""/>
+
+		<loadfile srcFile="PREPROD.cfg" property="PROPS-PREPROD"/>
+		<delete file="PREPROD.xsl"/>
+		<xslt in="cfg2xsl.xsl" out="PREPROD.xsl" style="cfg2xsl.xsl">
+			<param name="PROPERTIES" expression="${PROPS-PREPROD}"/>
+		</xslt>	
+		<replace preserveLastModified="yes" file="PREPROD.xsl" token="&lt;xsl:transform" value="&lt;xsl:transform xmlns:repo=&quot;http://www.tibco.com/xmlns/repo/types/2002&quot;"/>
+
+		<xslt in="${APPFOLDER}/META-INF/PREPROD.substvar" out="${PREPRODOUT}.tmp" style="PREPROD.xsl"/>
+		<copy file="${PREPRODOUT}.tmp" tofile="${PREPRODOUT}"/>
+		<!-- replace <value/> by <value></value> as written by Studio to minimize diffs -->
+		<replace preserveLastModified="yes" file="${PREPRODOUT}" token="&lt;value/&gt;" value="&lt;value&gt;&lt;/value&gt;"/>
+		<delete file="PREPROD.xsl"/>
+	</target>
+	
+	<target name="PROD" depends="init" if="PRODOUT_EXISTS">
+	
+		<echo message=""/>
+		<echo message="=== Rectifying PROD Profile File ..."/>
+		<echo message=""/>
+		
+		<loadfile srcFile="PROD.cfg" property="PROPS-PROD"/>
+		<delete file="PROD.xsl"/>
+		<xslt in="cfg2xsl.xsl" out="PROD.xsl" style="cfg2xsl.xsl">
+			<param name="PROPERTIES" expression="${PROPS-PROD}"/>
+		</xslt>	
+		<replace preserveLastModified="yes" file="PROD.xsl" token="&lt;xsl:transform" value="&lt;xsl:transform xmlns:repo=&quot;http://www.tibco.com/xmlns/repo/types/2002&quot;"/>
+
+		<xslt in="${APPFOLDER}/META-INF/PROD.substvar" out="${PRODOUT}.tmp" style="PROD.xsl"/>
+		<copy file="${PRODOUT}.tmp" tofile="${PRODOUT}"/>
+		<!-- replace <value/> by <value></value> as written by Studio to minimize diffs -->
+		<replace preserveLastModified="yes" file="${PRODOUT}" token="&lt;value/&gt;" value="&lt;value&gt;&lt;/value&gt;"/>
+		<delete file="PROD.xsl"/>
+		
+		<!-- end -->
+	</target>
+	
+	<target name="clean-up" depends="DEV,SIT,SIT2,PREPROD,PROD">
+		<delete file="${DEVOUT}.tmp"/>
+		<delete file="${SITOUT}.tmp"/>
+		<delete file="${SIT2OUT}.tmp"/>
+		<delete file="${PREPRODOUT}.tmp"/>
+		<delete file="${PRODOUT}.tmp"/>
+	</target>
+</project>

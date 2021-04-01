@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="update-profile-ant" default="clean-up">
+
+	<target name="check-params">
+	
+		<!-- CHECK PARAMS: PROFILE_IN -->
+		<condition property="PARAM_PROFILE_IN_SET" value="true">
+			<isset property="PROFILE_IN"/>
+		</condition>
+		<fail message="PROFILE_IN parameter is missing (input profile file full path)" unless="PARAM_PROFILE_IN_SET"/>
+
+		<available property="PARAM_PROFILE_IN_EXISTS" value="true" file="${PROFILE_IN}" type="file"/>
+		<fail message="Input profile cannot be found or is not an existing file: ${PROFILE_IN}" unless="PARAM_PROFILE_IN_EXISTS"/>
+
+		<!-- CHECK PARAMS: APP_APPCONFIG -->
+		<condition property="PARAM_APP_APPCONFIG_SET" value="true">
+			<isset property="APP_APPCONFIG"/>
+		</condition>
+		<fail message="APP_APPCONFIG parameter is missing (app AppConfig file full path)" unless="PARAM_APP_APPCONFIG_SET"/>
+
+		<available property="PARAM_APP_APPCONFIG_EXISTS" value="true" file="${GLOBAL_APPCONFIG}" type="file"/>
+		<fail message="Input app configuration cannot be found or is not an existing file: ${APP_APPCONFIG}" unless="PARAM_APP_APPCONFIG_EXISTS"/>
+		
+		<!-- CHECK PARAMS: GLOBAL_APPCONFIG -->
+		<condition property="PARAM_GLOBAL_APPCONFIG_SET" value="true">
+			<isset property="GLOBAL_APPCONFIG"/>
+		</condition>
+		<fail message="GLOBAL_APPCONFIG parameter is missing (global AppConfig file full path)" unless="PARAM_GLOBAL_APPCONFIG_SET"/>
+
+		<available property="PARAM_GLOBAL_APPCONFIG_EXISTS" value="true" file="${GLOBAL_APPCONFIG}" type="file"/>
+		<fail message="Input global configuration cannot be found or is not an existing file: ${GLOBAL_APPCONFIG}" unless="PARAM_GLOBAL_APPCONFIG_EXISTS"/>
+		
+		<!-- CHECK PARAMS: PROFILE_OUT -->
+		<condition property="PARAM_PROFILE_OUT_SET" value="true">
+			<isset property="PROFILE_OUT"/>
+		</condition>
+		<fail message="PROFILE_OUT parameter is missing (output profile file full path)" unless="PARAM_PROFILE_OUT_SET"/>
+	</target>
+
+	<target name="init" depends="check-params">
+	</target>
+	
+	<target name="main" depends="init">
+		<echo message="Input: Profile: ${PROFILE_IN}"/>
+		<echo message="Application: AppConfig: ${APP_APPCONFIG}"/>
+		<echo message="Global: AppConfig: ${GLOBAL_APPCONFIG}"/>
+		<echo message="Output: Profile: ${PROFILE_OUT}"/>
+	
+		<tempfile property="${TMP_OUT}" suffix=".xml"/>
+		<xslt in="${PROFILE_IN}" out="${TMP_OUT}" style="update-profile.xsl">
+			<param name="app-config" expression="${APP_APPCONFIG}"/>
+			<param name="global-config" expression="${GLOBAL_APPCONFIG}"/>
+			<param name="environmentName" expression="PROD"/>
+			<param name="default-environmentName" expression="DEFAULT"/>
+		</xslt>
+		<move file="${TMP_OUT}" tofile="${PROFILE_OUT}"/>
+	</target>
+	
+	<target name="clean-up" depends="main">
+	</target>
+</project>

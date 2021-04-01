@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="create-AppConfig-from-ODS-ant" default="clean-up">
+
+	<target name="check-params">
+		
+		<!-- CHECK PARAMS: ODS -->
+		<condition property="PARAM_ODS_SET" value="true">
+			<isset property="ODS"/>
+		</condition>
+		<fail message="ODS parameter is missing (.ods spreadsheet file full path)" unless="PARAM_ODS_SET"/>
+		
+		<available property="PARAM_ODS_EXISTS" value="true" file="${ODS}" type="file"/>
+		<fail message="ODS cannot be found or is not an existing file: ${ODS}" unless="PARAM_ODS_EXISTS"/>
+		
+		<!-- CHECK PARAMS: OUTPUT -->
+		<condition property="PARAM_OUTPUT_SET" value="true">
+			<isset property="OUTPUT"/>
+		</condition>
+		<fail message="Output parameter is missing (output AppConfig file full path)" unless="PARAM_OUTPUT_SET"/>
+	</target>
+
+	<target name="init" depends="check-params">
+	</target>
+	
+	<target name="main" depends="init">
+	
+		<echo message="Input: ODS File: ${ODS}"/>
+		<echo message="Output: AppConfig File: ${OUTPUT}"/>
+		
+		<tempfile property="TEMP"/>
+		<basename property="ODS_OUT" file="${TEMP}"/>
+		
+		<unzip src="${ODS}" dest="${java.io.tmpdir}/${ODS_OUT}" overwrite="true"/>
+		
+		<xslt in="${java.io.tmpdir}/${ODS_OUT}/content.xml" out="${OUTPUT}" style="create-AppConfig-from-ods.xsl">
+			<param name="SHEET_NAME" expression="Configuration"/>
+			<param name="VALUE_ID" expression="ID"/>
+		</xslt>
+		
+		<delete dir="${java.io.tmpdir}/${ODS_OUT}"/>
+	</target>
+	
+	<target name="clean-up" depends="main">
+	</target>
+</project>

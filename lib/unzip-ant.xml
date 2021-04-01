@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="unzip-ant" default="clean-up">
+
+	<target name="check-params">
+	</target>
+
+	<target name="init" depends="check-params">
+	</target>
+	
+	<target name="main" depends="init">
+	
+		<unzip src="${INPUT}" dest="${OUTPUT}" overwrite="true"/>
+	</target>
+	
+	<target name="clean-up" depends="main">
+	</target>
+</project>

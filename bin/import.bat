@@ -40,6 +40,9 @@ call %ANT_HOME%\bin\ant -f %DIRSCRIPT%\..\lib\create-AppConfig-from-ODS-ant.xml 
 for %%F in (%INPUT%) do call %ANT_HOME%\bin\ant -f %DIRSCRIPT%\..\lib\import-ant.xml -DPROFILE_IN=%%F -DPROFILE_OUT=%OUTPUT% -DAPP_APPCONFIG=%APP% -DGLOBAL_APPCONFIG=%GLOBAL% -DENV=%%~nF
 rem del /f /q %APP%
 rem del /f /q %GLOBAL%
+
+echo Profile has been updated: %OUTPUT%
+
 goto end
 
 REM ###########################################################################

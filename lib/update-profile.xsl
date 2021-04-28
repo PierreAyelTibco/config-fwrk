@@ -69,62 +69,92 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template name="m:gv-reconcile">
-    <xsl:param name="nodes1"/>
-    <xsl:param name="nodes2"/>
-    <xsl:param name="nodes3"/>
+	<xsl:template name="m:gv-reconcile">
+		<xsl:param name="nodes1"/>
+		<xsl:param name="nodes2"/>
+		<xsl:param name="nodes3"/>
 
-    <xsl:for-each select="$nodes1">
-      <xsl:choose>
-        <xsl:when test="$nodes2/property[@name=current()/prof:name]">
-        	<xsl:message><xsl:value-of select="concat(prof:name, ': Use value from app config...')"/></xsl:message>
-        	
-          <xsl:copy>
-            <xsl:copy-of select="prof:name"/>
-            <xsl:element name="value" namespace="{namespace-uri(.)}">
-			 <xsl:choose>
-              <xsl:when test="$nodes2/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value">
-                <xsl:value-of select="$nodes2/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value"/>
-              </xsl:when>
-              <xsl:when test="$nodes2/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value">
-                <xsl:value-of select="$nodes2/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value"/>
-              </xsl:when>
-               </xsl:choose>
-            </xsl:element>
-            <xsl:copy-of select="prof:deploymentSettable"/>
-            <xsl:copy-of select="prof:serviceSettable"/>
-            <xsl:copy-of select="prof:type"/>
-            <xsl:copy-of select="prof:isOverride"/>
-            <xsl:copy-of select="prof:modTime"/>
-          </xsl:copy>
-        </xsl:when>
-        <xsl:when test="$nodes3/property[@name=current()/prof:name]">
-        	<xsl:message><xsl:value-of select="concat(prof:name, ': Use value from global config...')"/></xsl:message>
-        	
-          <xsl:copy>
-            <xsl:copy-of select="prof:name"/>
-            <xsl:element name="value" namespace="{namespace-uri(.)}">
-			 <xsl:choose>
-              <xsl:when test="$nodes3/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value">
-                <xsl:value-of select="$nodes3/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value"/>
-              </xsl:when>
-              <xsl:when test="$nodes3/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value">
-                <xsl:value-of select="$nodes3/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value"/>
-              </xsl:when>
-              </xsl:choose>
+		<xsl:for-each select="$nodes1">
+			<xsl:variable name="NODE2" select="$nodes2/property[@name=current()/prof:name]"/>
+			<xsl:variable name="NODE3" select="$nodes3/property[@name=current()/prof:name]"/>
 
-            </xsl:element>
-            <xsl:copy-of select="prof:deploymentSettable"/>
-            <xsl:copy-of select="prof:serviceSettable"/>
-            <xsl:copy-of select="prof:type"/>
-            <xsl:copy-of select="prof:isOverride"/>
-            <xsl:copy-of select="prof:modTime"/>
-          </xsl:copy>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:copy-of select="current()"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:for-each>
-  </xsl:template>
+			<xsl:choose>
+				<xsl:when test="$NODE2">
+
+					<xsl:variable name="VALUE">
+						<xsl:choose>
+							<xsl:when test="$NODE2/environment[@name=$environmentName]/@value">
+								<xsl:value-of select="$NODE2/environment[@name=$environmentName]/@value"/>
+							</xsl:when>
+							<xsl:when test="$NODE2/environment[@name=$default-environmentName]/@value">
+								<xsl:value-of select="$NODE2/environment[@name=$default-environmentName]/@value"/>
+							</xsl:when>
+						</xsl:choose>
+					</xsl:variable>
+
+					<xsl:message>
+						<xsl:choose>
+							<xsl:when test="$NODE2/@type='Password'">
+								<xsl:value-of select="concat(prof:name, ': Use value from app config...')"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="concat(prof:name, ': Use value from app config...: ', $VALUE)"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:message>
+
+					<xsl:copy>
+						<xsl:copy-of select="prof:name"/>
+						<xsl:element name="value" namespace="{namespace-uri(.)}">
+							<xsl:value-of select="$VALUE"/>
+						</xsl:element>
+						<xsl:copy-of select="prof:deploymentSettable"/>
+						<xsl:copy-of select="prof:serviceSettable"/>
+						<xsl:copy-of select="prof:type"/>
+						<xsl:copy-of select="prof:isOverride"/>
+						<xsl:copy-of select="prof:modTime"/>
+					</xsl:copy>
+				</xsl:when>
+				<xsl:when test="$NODE3">
+					
+					<xsl:variable name="VALUE">
+						<xsl:choose>
+							<xsl:when test="$NODE3/environment[@name=$environmentName]/@value">
+								<xsl:value-of select="$NODE3/environment[@name=$environmentName]/@value"/>
+							</xsl:when>
+							<xsl:when test="$NODE3/environment[@name=$default-environmentName]/@value">
+								<xsl:value-of select="$NODE3/environment[@name=$default-environmentName]/@value"/>
+							</xsl:when>
+						</xsl:choose>
+					</xsl:variable>
+				
+					<xsl:message>
+						<xsl:choose>
+							<xsl:when test="$NODE3/@type='Password'">
+								<xsl:value-of select="concat(prof:name, ': Use value from global config...')"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="concat(prof:name, ': Use value from global config...: ', $VALUE)"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:message>
+
+					<xsl:copy>
+						<xsl:copy-of select="prof:name"/>
+						<xsl:element name="value" namespace="{namespace-uri(.)}">
+							<xsl:value-of select="$VALUE"/>
+						</xsl:element>
+						<xsl:copy-of select="prof:deploymentSettable"/>
+						<xsl:copy-of select="prof:serviceSettable"/>
+						<xsl:copy-of select="prof:type"/>
+						<xsl:copy-of select="prof:isOverride"/>
+						<xsl:copy-of select="prof:modTime"/>
+					</xsl:copy>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:copy-of select="current()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:for-each>
+	</xsl:template>
 </xsl:stylesheet>

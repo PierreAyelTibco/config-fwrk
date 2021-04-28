@@ -32,7 +32,7 @@
 		
 		<unzip src="${ODS}" dest="${java.io.tmpdir}/${ODS_OUT}" overwrite="true"/>
 		
-		<xslt in="${java.io.tmpdir}/${ODS_OUT}/content.xml" out="${OUTPUT}" style="create-AppConfig-from-ods.xsl">
+		<xslt in="${java.io.tmpdir}/${ODS_OUT}/content.xml" out="${OUTPUT}" style="create-AppConfig-from-ODS.xsl">
 			<param name="SHEET_NAME" expression="Configuration"/>
 			<param name="VALUE_ID" expression="ID"/>
 		</xslt>

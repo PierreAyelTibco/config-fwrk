@@ -40,10 +40,11 @@
 						<xsl:if test="text:p=$VALUE_ID">			
 							<xsl:element name="property">
 								<xsl:attribute name="name"><xsl:value-of select="$ROW/table:table-cell[position()=$HPOS + 1]/text:p"/></xsl:attribute>
+								<xsl:attribute name="type"><xsl:value-of select="$ROW/table:table-cell[position()=$HPOS + 2]/text:p"/></xsl:attribute>
 								<xsl:for-each select="$ROW/table:table-cell">
 									<xsl:variable name="POS" select="position()"/>
 
-									<xsl:if test="$POS > $HPOS + 4">
+									<xsl:if test="$POS > $HPOS + 3">
 										<xsl:element name="environment">
 											<xsl:attribute name="name"><xsl:value-of select="$HEADER_ROW/table:table-cell[$POS]/text:p"/></xsl:attribute>
 											<xsl:attribute name="value"><xsl:value-of select="text:p"/></xsl:attribute>

@@ -80,13 +80,17 @@
 
 			<xsl:choose>
 				<xsl:when test="$NODE2">
+				
+					<xsl:if test="count[$NODE2] > 1">
+						<xsl:message><xsl:value-of select="concat(prof:name, 'is configured several times, we will use the last one...')"/></xsl:message>
+					</xsl:if>
 
 					<xsl:variable name="VALUE">
 						<xsl:choose>
-							<xsl:when test="$NODE2/environment[@name=$environmentName]/@value">
+							<xsl:when test="$NODE2[last()]/environment[@name=$environmentName]/@value">
 								<xsl:value-of select="$NODE2/environment[@name=$environmentName]/@value"/>
 							</xsl:when>
-							<xsl:when test="$NODE2/environment[@name=$default-environmentName]/@value">
+							<xsl:when test="$NODE2[last()]/environment[@name=$default-environmentName]/@value">
 								<xsl:value-of select="$NODE2/environment[@name=$default-environmentName]/@value"/>
 							</xsl:when>
 						</xsl:choose>
@@ -116,13 +120,17 @@
 					</xsl:copy>
 				</xsl:when>
 				<xsl:when test="$NODE3">
+
+					<xsl:if test="count[$NODE3] > 1">
+						<xsl:message><xsl:value-of select="concat(prof:name, 'is configured several times, we will use the last one...')"/></xsl:message>
+					</xsl:if>
 					
 					<xsl:variable name="VALUE">
 						<xsl:choose>
-							<xsl:when test="$NODE3/environment[@name=$environmentName]/@value">
+							<xsl:when test="$NODE3[last()]/environment[@name=$environmentName]/@value">
 								<xsl:value-of select="$NODE3/environment[@name=$environmentName]/@value"/>
 							</xsl:when>
-							<xsl:when test="$NODE3/environment[@name=$default-environmentName]/@value">
+							<xsl:when test="$NODE3[last()]/environment[@name=$default-environmentName]/@value">
 								<xsl:value-of select="$NODE3/environment[@name=$default-environmentName]/@value"/>
 							</xsl:when>
 						</xsl:choose>

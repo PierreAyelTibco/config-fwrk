@@ -138,7 +138,7 @@ ExportFromEAR() {
 
 ExportFromFolder() {
 
-	CheckFile "${INPUT}"
+	CheckFolder "${INPUT}"
 
 	PrepareVariables
 	
@@ -152,10 +152,12 @@ ExportFromFolder() {
 			"${DIRSCRIPT}/${SCRIPT}" "${F}" "${TMPL}" "${TMPL}" #--sheet "${SHEET_NAME}"
 		fi
 	done
-	for F in "${INPUT}"/*.application ; do
+	for F in "${INPUT}"/* ; do
 		CheckFile "${F}"
 		
-		"${DIRSCRIPT}/${SCRIPT}" "${F}" "${TMPL}" "${TMPL}" #--sheet "${SHEET_NAME}"
+		if [ -f "${F}/META-INF/TIBCO.xml" ] ; then
+			"${DIRSCRIPT}/${SCRIPT}" "${F}" "${TMPL}" "${TMPL}" #--sheet "${SHEET_NAME}"
+		fi
 	done
 	cp "${TMPL}" "${OUTPUT}"
 }
@@ -195,17 +197,21 @@ done
 [ "${INPUT}" = "" -o "${TEMPLATE}" = "" -o "${OUTPUT}" = "" ] && Usage
 
 case "${INPUT}" in
-*.substvar)
+*.profile)
 	ExportFromProfile
 	;;
-*.application)
-	ExportFromApplication
+*.substvar)
+	ExportFromProfile
 	;;
 *.ear)
 	ExportFromEAR
 	;;
 *)
-	ExportFromFolder
+    if [ -f "${INPUT}/META-INF/TIBCO.xml" ] ; then
+		ExportFromApplication
+	else
+		ExportFromFolder
+	fi
 	;;
 esac
 exit $?

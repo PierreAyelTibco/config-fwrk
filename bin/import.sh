@@ -107,9 +107,13 @@ case "${INPUT}" in
 *.substvar)
 	ImportIntoProfile $*
 	;;
-*.application)
-	ImportIntoApplication
-	;;
+*)
+	if [ -f "${INPUT}/META-INF/TIBCO.xml" ] ; then
+		ImportIntoApplication $*
+	else
+		echo Error: file ${INPUT} is not a profile or application folder...	
+		exit -2		
+	fi
 esac
 exit $?
 

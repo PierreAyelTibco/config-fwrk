@@ -1,4 +1,4 @@
-@echo off
+REM @echo off
 setlocal
 REM ###########################################################################
 
@@ -24,8 +24,9 @@ if "%~3" == "" set OUTPUT=%TEMP%\%RANDOM%.ods
 
 set QUIET=%4
 
-if "%~x1" == ".application" goto application
+if EXIST "%INPUT%\META-INF\TIBCO.xml" goto application
 if "%~x1" == ".substvar" goto profile
+if "%~x1" == ".profile" goto profile
 if "%~x1" == ".ear" goto ear
 goto all
 
@@ -44,7 +45,10 @@ REM ###  Export configuration from one application folder
 set TMPL=%TEMP%\%RANDOM%.ods
 copy %TEMPLATE% %TMPL%
 
-for %%f in (%INPUT%\META-INF\*.substvar) do (call %ANT_HOME%\bin\ant -f %DIRSCRIPT%\..\lib\export-ant.xml -DAPPCONFIG=%%f -DMODULE_CONFIG=%INPUT%/../%~n1/META-INF/module.bwm -DTEMPLATE=%TMPL% -DODS=%OUTPUT% "-DDATE=%date% %time%"
+set MODULE_FOLDER=%INPUT%/../%~n1
+if EXIST "%MODULE_FOLDER%.module\META-INF\module.bwm" set MODULE_FOLDER=%INPUT%/../%~n1.module
+
+for %%f in (%INPUT%\META-INF\*.substvar) do (call %ANT_HOME%\bin\ant -f %DIRSCRIPT%\..\lib\export-ant.xml -DAPPCONFIG=%%f -DMODULE_CONFIG=%MODULE_FOLDER%\META-INF\module.bwm -DTEMPLATE=%TMPL% -DODS=%OUTPUT% "-DDATE=%date% %time%"
 move %OUTPUT% %TMPL%
 )
 copy %TMPL% %OUTPUT%

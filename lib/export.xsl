@@ -267,6 +267,8 @@
 			<!-- create new rows -->
 			<xsl:variable name="THIS" select="."/>
 			<xsl:for-each select="$GVARS">
+				<xsl:sort select="prof:name"/>
+			
 				<xsl:variable name="GNAME" select="prof:name"/>
 				<xsl:variable name="GVALUE" select="prof:value"/>
 				<xsl:variable name="GTYPE" select="prof:type"/>

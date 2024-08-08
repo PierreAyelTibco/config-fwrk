@@ -1,4 +1,4 @@
-rem @echo off
+@echo off
 setlocal
 REM ###########################################################################
 
@@ -25,7 +25,7 @@ set GLOBAL_CONFIG=%3
 set APP=%TEMP%\%RANDOM%.xml
 set GLOBAL=%TEMP%\%RANDOM%.xml
 
-if "%~x1" == ".application" goto application
+if EXIST "%INPUT%\META-INF\TIBCO.xml" goto application
 
 REM ###########################################################################
 REM ### Update one profile file

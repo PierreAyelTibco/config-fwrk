@@ -11,7 +11,20 @@
 
 Usage() {
 	echo ""
-	echo ${SCRIPT}
+	echo ${SCRIPT} "input-profile app-config-file global-config-file [output-profile]"
+	echo ""
+	echo Options:
+	echo ""
+	echo input-profile:      The existing .substvar or .profile file or application folder to read profiles from.
+	echo ""
+	echo app-config-file:    The existing Excel spreadsheet file for the application settings.
+	echo                     This file can be the same as global-config-file. 
+	echo ""
+	echo global-config-file: The existing Excel spreadsheet file for the global settings.
+	echo                     This file can be the same as app-config-file.       
+	echo ""
+	echo output-profile:     The target profile file.
+	echo ""
 	exit -1
 }
 

@@ -25,7 +25,16 @@ Usage() {
 	echo Options:
 	#echo "  -env <environment> The name of the environment to use when exporting one profile file."
 	#echo "                     Ignored when exporting an application, EAR or folder."
+	echo input-profile: An existing .substvar file or .profile file or .ear file or application folder.
 	echo ""
+	echo template-ods:  An existing Excel spreadsheet file to use as base/template. 
+	echo                You can leave this option as empty string ("") to use the default empty template.
+	echo ""
+	echo output-ods:    The output Excel spreadsheet file.           
+	echo ""
+	echo --quiet:       Does not open the spreadsheet file at the end of the export.
+	echo ""
+	
 	exit -1
 }
 

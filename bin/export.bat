@@ -88,9 +88,21 @@ goto end
 REM ###########################################################################
 
 :usage
+echo.
 echo Usage: %0 input-profile [template-ods] [output-ods] [--quiet]
-
---quiet: Does not open the spreadsheet file at the end of the export.
+echo.
+echo Options:
+echo.
+echo input-profile: An existing .substvar file or .profile file or .ear file or application folder.
+echo.
+echo template-ods:  An existing Excel spreadsheet file to use as base/template. 
+echo                You can leave this option as empty string ("") to use the default empty template.
+echo.
+echo output-ods:    The output Excel spreadsheet file.           
+echo.
+echo --quiet:       Does not open the spreadsheet file at the end of the export.
+echo.
+goto end
 
 REM ###########################################################################
 

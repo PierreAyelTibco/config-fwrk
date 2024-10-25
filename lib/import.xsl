@@ -65,31 +65,32 @@
 
       <xsl:call-template name="m:gv-reconcile">
         <xsl:with-param name="nodes1" select="prof:*"/>
-        <xsl:with-param name="nodes2" select="document($app-config)/configuration/properties"/>
-        <xsl:with-param name="nodes3" select="document($global-config)/configuration/properties"/>
+        <xsl:with-param name="appconfig" select="document($app-config)/configuration/properties"/>
+        <xsl:with-param name="globalconf" select="document($global-config)/configuration/properties"/>
       </xsl:call-template>
     </xsl:copy>
   </xsl:template>
 
   <xsl:template name="m:gv-reconcile">
     <xsl:param name="nodes1"/>
-    <xsl:param name="nodes2"/>
-    <xsl:param name="nodes3"/>
+    <xsl:param name="appconfig"/>
+    <xsl:param name="globalconf"/>
 
     <xsl:for-each select="$nodes1">
+		
       <xsl:choose>
-        <xsl:when test="$nodes2/property[@name=current()/prof:name]">
+        <xsl:when test="$appconfig/property[@name=current()/prof:name]">
         	<xsl:message><xsl:value-of select="concat(prof:name, ': Use value from app config...')"/></xsl:message>
         	
           <xsl:copy>
             <xsl:copy-of select="prof:name"/>
             <xsl:element name="value" namespace="{namespace-uri(.)}">
 			 <xsl:choose>
-              <xsl:when test="$nodes2/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value">
-                <xsl:value-of select="$nodes2/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value"/>
+              <xsl:when test="$appconfig/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value">
+                <xsl:value-of select="$appconfig/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value"/>
               </xsl:when>
-              <xsl:when test="$nodes2/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value">
-                <xsl:value-of select="$nodes2/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value"/>
+              <xsl:when test="$appconfig/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value">
+                <xsl:value-of select="$appconfig/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value"/>
               </xsl:when>
                </xsl:choose>
             </xsl:element>
@@ -100,18 +101,19 @@
             <xsl:copy-of select="prof:modTime"/>
           </xsl:copy>
         </xsl:when>
-        <xsl:when test="$nodes3/property[@name=current()/prof:name]">
+		
+        <xsl:when test="$globalconf/property[@name=current()/prof:name]">
         	<xsl:message><xsl:value-of select="concat(prof:name, ': Use value from global config...')"/></xsl:message>
         	
           <xsl:copy>
             <xsl:copy-of select="prof:name"/>
             <xsl:element name="value" namespace="{namespace-uri(.)}">
 			 <xsl:choose>
-              <xsl:when test="$nodes3/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value">
-                <xsl:value-of select="$nodes3/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value"/>
+              <xsl:when test="$globalconf/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value">
+                <xsl:value-of select="$globalconf/property[@name=current()/prof:name]/environment[@name=$environmentName]/@value"/>
               </xsl:when>
-              <xsl:when test="$nodes3/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value">
-                <xsl:value-of select="$nodes3/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value"/>
+              <xsl:when test="$globalconf/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value">
+                <xsl:value-of select="$globalconf/property[@name=current()/prof:name]/environment[@name=$default-environmentName]/@value"/>
               </xsl:when>
               </xsl:choose>
 
@@ -127,6 +129,7 @@
           <xsl:copy-of select="current()"/>
         </xsl:otherwise>
       </xsl:choose>
+	  
     </xsl:for-each>
   </xsl:template>
 </xsl:stylesheet>
